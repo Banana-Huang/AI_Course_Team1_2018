@@ -111,7 +111,7 @@ def depthFirstSearch(problem):
                         action.push(temp)
                     explored.add(next[0]) # add unexplored successors in to explored set
                     frontier.push((next[0],next[1])) # push successors in to frontier
-        if no_road: # if there is no road, it means that you have to choose another road to go on
+        if no_road: # if there is no road, it means that you have to choose predecessor's another road to go on
             action.pop()
             rm_State = currentState[0]
             while not action.isEmpty(): # Check whether predecessor has road to choose
@@ -121,14 +121,39 @@ def depthFirstSearch(problem):
                 if temp[2]:
                     action.push(temp)
                     break
-        no_road = True
+        no_road = True          
     print "No goal found\nPlease press red cross to leave...."
     return ['Stop']
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    explored = set() # Check state preventing repeat visiting
+    action = {} # Record the action
+    currentState = None 
+    predecessor = None 
+    frontier = util.Queue() # Use to choose next state
+    frontier.push((problem.getStartState(),None,None))
+    explored.add(problem.getStartState())
+    while not frontier.isEmpty():
+        currentState = frontier.pop()
+        predecessor = currentState[2]
+        action[currentState[0]] = (currentState[1],predecessor)
+        for next in problem.getSuccessors(currentState[0]):
+            if next[0] not in explored:
+                if problem.isGoalState(next[0]):
+                    result = []                    # Get the path from action sequence
+                    result.insert(0,next[1])
+                    road = action[currentState[0]]
+                    while road[0] != None:
+                        result.insert(0,road[0])
+                        road = action[road[1]]
+                    return result
+                else:
+                    explored.add(next[0]) # Set successors as explored
+                    frontier.push((next[0],next[1],currentState[0])) # push successors in to frontier
+    print "No goal found\nPlease press red cross to leave...."
+    return ['Stop']
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
