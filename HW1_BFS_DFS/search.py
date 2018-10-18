@@ -87,6 +87,7 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    print "Start's successors:"
     no_road = True # Check if the state is no other road
     explored = set() # Check state preventing repeat visiting
     currentState = None 
@@ -158,7 +159,41 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    explored = set()                # Check state preventing repeat visiting
+    action = {}                     # Record the action 
+    frontier = util.PriorityQueue() # Use to choose next state
+    currentCost = None              # Record the current cost
+    cost = 0                        # Record the cost between two state
+    move = None                     # Record the move like 'South','West','North','East'
+    currentState = problem.getStartState()
+    frontier.push(problem.getStartState(),0)               # Push the initial state
+    action[problem.getStartState()] = ( move, cost, None ) # move, cost, predecessor
+    while not frontier.isEmpty():
+        currentState = frontier.pop()
+        explored.add(currentState)
+        if problem.isGoalState(currentState):
+            result = []            # Get the path from action sequence
+            data = action[currentState]
+            while data[2] != None:
+                result.insert(0,data[0])
+                currentState = data[2]
+                data = action[currentState]
+            return result
+        currentCost = action[currentState][1]
+        #next[0]: state next[1]:move next[0]:cost
+        for next in problem.getSuccessors(currentState): 
+            if next[0] not in explored:
+                move = next[1]
+                cost = next[2]
+                if next[0] not in action:
+                    action[next[0]] = ( move,cost+currentCost,currentState)
+                else:
+                    if action[next[0]][1] > cost + currentCost: 
+                        # if currentCost+cost less than the node before record,then update the node 
+                        action[next[0]] = ( move, cost+currentCost,currentState)
+                frontier.update(next[0],next[2] + currentCost)
+    print "No goal found\nPlease press red cross to leave...."
+    return ['Stop']
 
 def nullHeuristic(state, problem=None):
     """
@@ -168,9 +203,43 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
+    """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    explored = set()                # Check state preventing repeat visiting
+    action = {}                     # Record the action 
+    frontier = util.PriorityQueue() # Use to choose next state
+    currentCost = None              # Record the current cost
+    cost = 0                        # Record the cost between two state
+    move = None                     # Record the move like 'South','West','North','East'
+    currentState = problem.getStartState()
+    frontier.push(problem.getStartState(),0 + heuristic(currentState, problem))               # Push the initial state
+    action[problem.getStartState()] = ( move, cost, None ) # move, cost, predecessor
+    while not frontier.isEmpty():
+        currentState = frontier.pop()
+        explored.add(currentState)
+        if problem.isGoalState(currentState):
+            result = []            # Get the path from action sequence
+            data = action[currentState]
+            while data[2] != None:
+                result.insert(0,data[0])
+                currentState = data[2]
+                data = action[currentState]
+            return result
+        currentCost = action[currentState][1]
+        #next[0]: state next[1]:move next[0]:cost
+        for next in problem.getSuccessors(currentState): 
+            if next[0] not in explored:
+                move = next[1]
+                cost = next[2]
+                if next[0] not in action:
+                    action[next[0]] = ( move,cost+currentCost,currentState)
+                else:
+                    if action[next[0]][1] > cost + currentCost: 
+                        # if currentCost+cost less than the node before record,then update the node 
+                        action[next[0]] = ( move, cost+currentCost,currentState)
+                frontier.update(next[0],next[2] + currentCost + heuristic(currentState, problem))
+    print "No goal found\nPlease press red cross to leave...."
+    return ['Stop']
 
 
 # Abbreviations
