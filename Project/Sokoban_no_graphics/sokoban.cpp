@@ -193,16 +193,17 @@ int sokoban::getControl() {
 			}
 		}
 	}
+	return LEAVE;
 }
 
-void sokoban::showGame() {
+void sokoban::showGame(){
 	system("cls");
 	cout << "---------current state--------" << endl;
-	for ( Point p: target ) {
+	for ( const Point &p: target ) {
 		if(grid[p.getY()][p.getX()] != 2 && grid[p.getY()][p.getX()] != 1 )
 			grid[p.getY()][p.getX()] = 5;
 	}
-	for ( vector<int> &temp: grid ) {
+	for ( vector<int> temp: grid ) {
 		for ( int &number: temp ) {
 			switch(number) {
 				case 0: // ROAD
@@ -245,7 +246,7 @@ void sokoban::showGame() {
 			break;
 	}
 	cout << " Move: " << move << " Push: " << push << endl;
-	for ( Point p: target ) {
+	for ( const Point &p: target ) {
 		if(grid[p.getY()][p.getX()] == 5 )
 			grid[p.getY()][p.getX()] = 0;
 	}
