@@ -4,14 +4,12 @@
 #include <vector>
 #include <string>
 
-const int ROAD = 0, AGENT = 1, BOX = 2, WALL = 3, BLACK = 4, TARGET = 5,BOX_ON_TARGET=6, MAN_ON_TARGET=7;
-const int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, RESTART = 4, LEAVE = 5;
 
 class sokoban {
 public:
 	sokoban();
 	~sokoban();
-	void gameProgress();
+	void gameProgress( int, int );
 	bool win_check();
 	Point getAgentPos() const { return agentPos; };
 	std::vector<Point> getTarget() const { return target; };

@@ -6,6 +6,35 @@ agent::agent( vector<vector<int>> maze,vector<Point> target, Point agentPos ) {
     setConfig( maze, target, agentPos );
 }
 
+agent::agent( QVector<QVector<int>> maze, QVector<QPoint> target, QPoint agentPos ) {
+    this->mapSize.setY( maze.size() );
+    this->mapSize.setX( maze[0].size() );
+    this->agentPos.setX(agentPos.x()); this->agentPos.setY(agentPos.y());
+    for ( const QPoint &p: target ) {
+        Point temp(p.x(),p.y());
+        this->targetVector.push_back(temp);
+    }
+
+    agentView.resize( mapSize.getY() );
+    for( vector<int> &v : agentView) {
+        v.resize( mapSize.getX() );
+    }
+
+    for( int i = 0; i < agentView.size(); i++ ) { // Initial box position
+        for ( int j = 0; j < agentView[i].size(); j++ )
+            agentView[i][j] = maze[i][j];
+    }
+
+    for( int i = 0; i < agentView.size(); i++ ) { // Initial box position
+        for ( int j = 0; j < agentView[i].size(); j++ )
+            if( agentView[i][j] == 2 ) {
+                boxVector.push_back(Point(j,i));
+                agentView[i][j] = 0;
+            }
+    }
+    this->boxView = this->agentView;
+}
+
 void agent::setConfig( std::vector<std::vector<int>> maze, std::vector<Point> targetVector, Point agentPos ) {
 	this->mapSize.setY( maze.size() );
     this->mapSize.setX( maze[0].size() );

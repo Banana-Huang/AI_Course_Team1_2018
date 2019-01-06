@@ -37,6 +37,14 @@
         "xstddef": "cpp",
         "xstring": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "algorithm": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "stack": "cpp",
+        "xtree": "cpp",
+        "list": "cpp",
+        "map": "cpp"
     }
 }

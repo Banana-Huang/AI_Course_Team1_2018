@@ -1,9 +1,11 @@
 .PHONY: all clean
 
+OBJ = main.o
+SRC = main.cpp
 all: main
 
-main: clean main.o sokoban.o agent.o
-	g++ -o main main.o sokoban.o agent.o
+main: clean ${OBJ} sokoban.o agent.o
+	g++ -o main ${OBJ} sokoban.o agent.o
 
 sokoban.o: sokoban.cpp
 	g++ -c sokoban.cpp
@@ -11,8 +13,8 @@ sokoban.o: sokoban.cpp
 agent.o: agent.cpp
 	g++ -c agent.cpp
 
-main.o: main.cpp
-	g++ -c main.cpp
+${OBJ}: ${SRC}
+	g++ -c ${SRC}
 
 clean:
 	rm -f main *.o

@@ -1,11 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#include "agent.h"
 #include <QDir>
 #include <QMainWindow>
 #include <QString>
 #include <QFile>
 #include <QDebug>
 #include <QTime>
+#include <QTimer>
 #include <QVector>
 #include <string>
 #include <QImage>
@@ -35,8 +37,8 @@ public:
     int getPush() { return push; };
     QVector<QPoint>& getHistory();
     QVector<QPoint>& getTargetPos();
+    const QVector<QVector<int>>& getMaze();
     QPoint getAgentPos();
-    void edgeScan();
     void restore();
     int getData(int, int);
     bool gameProgress( int );
@@ -67,6 +69,7 @@ public slots:
     void redraw();
     void gameStart();
     void gameStop();
+    void aiControl();
 protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
 signals:
@@ -78,10 +81,12 @@ private:
     QString cwd;
     QSize originSize;
     QTime *timer = nullptr;
+    QTimer aiTimer;
     QVector<QVector<QGraphicsPixmapItem*>> graph;
     QVector<QPixmap> *imageVector = nullptr;
     QGraphicsScene *scene;
     sokoban *game;
+    agent *man;
     bool game_start = false;
 };
 

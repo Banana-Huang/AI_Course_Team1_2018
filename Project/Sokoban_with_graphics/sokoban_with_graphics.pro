@@ -27,10 +27,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
     sokoban.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    agent.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    agent.h \
+    point.h
 
 FORMS += \
         mainwindow.ui

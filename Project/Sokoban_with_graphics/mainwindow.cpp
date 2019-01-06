@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <Windows.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -75,32 +76,48 @@ MainWindow::~MainWindow()
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     bool win_flag = false;
-    QString game_status = "Action: ";
+    QString game_status;
     if ( game_start ) {
         switch ( event->key() ) {
             case Qt::Key_W:
                 win_flag = game->gameProgress(0);
+                game_status += "Action: ";
                 game_status += "Up ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
                 break;
             case Qt::Key_S:
                 win_flag = game->gameProgress(1);
+                game_status += "Action: ";
                 game_status += "Down ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
                 break;
             case Qt::Key_A:
                 win_flag = game->gameProgress(2);
+                game_status += "Action: ";
                 game_status += "Left ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
                 break;
             case Qt::Key_D:
                 win_flag = game->gameProgress(3);
+                game_status += "Action: ";
                 game_status += "Right ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
                 break;
             default:
                 break;
         }
-        game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
-                QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
-                " Push: " + QString::number(game->getPush());
-        ui->statusTextBrowser->append(game_status);
         QVector<QPoint> &history = game->getHistory();
         QVector<QPoint> target = game->getTargetPos();
         for( int i = 0; i < history.size(); i++ )
@@ -128,6 +145,80 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             gameStop();
         }
     }
+}
+
+void MainWindow::aiControl() {
+    bool win_flag = false;
+    int action = man->getAction();
+    QString game_status;
+        switch ( action ) {
+            case 0:
+                win_flag = game->gameProgress(0);
+                game_status += "Action: ";
+                game_status += "Up ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
+                break;
+            case 1:
+                win_flag = game->gameProgress(1);
+                game_status += "Action: ";
+                game_status += "Down ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
+                break;
+            case 2:
+                win_flag = game->gameProgress(2);
+                game_status += "Action: ";
+                game_status += "Left ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
+                break;
+            case 3:
+                win_flag = game->gameProgress(3);
+                game_status += "Action: ";
+                game_status += "Right ";
+                game_status += "Agent: (" + QString::number(game->getAgentPos().x()) + "," +
+                        QString::number(game->getAgentPos().y()) + ")  Move: " + QString::number(game->getMove()) +
+                        " Push: " + QString::number(game->getPush());
+                ui->statusTextBrowser->append(game_status);
+                break;
+            default:
+                break;
+        }
+        QVector<QPoint> &history = game->getHistory();
+        QVector<QPoint> target = game->getTargetPos();
+        for( int i = 0; i < history.size(); i++ )
+             graph[history[i].y()][history[i].x()]->setPixmap((*imageVector)[i]);
+        history.clear();
+        int data;
+        for( QPoint &p: target ) {
+            data = game->getData(p.x(),p.y());
+            switch( data ) {
+                case 0:
+                    graph[p.y()][p.x()]->setPixmap((*imageVector)[5]);
+                    break;
+                case 1:
+                    graph[p.y()][p.x()]->setPixmap((*imageVector)[7]);
+                    break;
+                case 2:
+                    graph[p.y()][p.x()]->setPixmap((*imageVector)[6]);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if( win_flag ) {
+            ui->statusTextBrowser->append("You win!");
+            gameStop();
+        }
+
 }
 
 void MainWindow::setGameView()
@@ -236,8 +327,16 @@ void MainWindow::gameStart() {
         game_start = true;
     } else {
         setGameView();
-        game->edgeScan();
-        redraw();
+        man = new agent( game->getMaze(), game->getTargetPos(), game->getAgentPos() );
+        connect( &aiTimer, SIGNAL(timeout()), this, SLOT(aiControl()));
+        bool has_sol = man->planAction();
+        if( has_sol ) {
+            aiTimer.start(250);
+        } else {
+            QString s = "The maze has no solution!\n";
+            ui->statusTextBrowser->append(s);
+            gameStop();
+        }
     }
 }
 
@@ -254,7 +353,8 @@ void MainWindow::gameStop() {
     ui->agentComboBox->setEnabled(true);
     game_start = false;
     if( ui->agentComboBox->currentText() == "AI" ) {
-        setGameView();
-        redraw();
+        disconnect( &aiTimer, SIGNAL(timeout()), this, SLOT(aiControl()));
+        aiTimer.stop();
+        delete man;
     }
 }

@@ -13,6 +13,10 @@ sokoban::sokoban()
 
 sokoban::~sokoban() {}
 
+const QVector<QVector<int>>& sokoban::getMaze() {
+    return grid;
+}
+
 int sokoban::getWidth() {
     return mapSize.x();
 }
@@ -171,80 +175,6 @@ void sokoban::loadGame( std::string filename ) {
 	backup = grid;
 }
 
-void sokoban::edgeScan() {
-    QVector<QPoint> nextAction = {{0,-1},{1,0},{0,1},{-1,0}}; // Possible action
-    QSet<QPoint> explored; // Explored state
-    QQueue<QPoint> frontier; // breath first search frontier
-    for ( QPoint &p: target ) { // explicit annotate target
-        if(grid[p.y()][p.x()] != 2 && grid[p.y()][p.x()] != 1 )
-            grid[p.y()][p.x()] = 5;
-        explored.insert(p); // insert targets into explored set
-    }
-    frontier.enqueue(agentPos); // begin at agent position
-    explored.insert(agentPos); // add begin position into frontier
-    QPoint currentState, nextState;
-    while( !frontier.empty() ) {
-        currentState = frontier.dequeue();
-        for( QPoint &p: nextAction ) {
-            nextState.setX(p.x() + currentState.x());
-            nextState.setY(p.y() + currentState.y());
-            if((grid[nextState.y()][nextState.x()] == 0 || grid[nextState.y()][nextState.x()] == 2 )
-                && explored.find(nextState) == explored.end() )
-            {
-                frontier.enqueue(nextState);
-                explored.insert(nextState);
-            }
-        }
-        for( int it = 0; it < nextAction.size(); ++it ) {
-            if( grid[currentState.y()+nextAction[it].y()][currentState.x()+nextAction[it].x()] == 3 // check L region
-            && grid[currentState.y()+nextAction[(it+1)%4].y()][currentState.x() + nextAction[(it+1)%4].x()] == 3 ) {
-                if( grid[currentState.y()][currentState.x()] == 0 || grid[currentState.y()][currentState.x()] == 1) {
-                    grid[currentState.y()][currentState.x()] = 8;
-                    break;
-                } else if (grid[currentState.y()][currentState.x()] == 2){
-                    std::cout << "The game has no solutions" << std::endl;
-                    break;
-                }
-            }
-        }
-
-        for( int it = 0; it != nextAction.size(); ++it ) {
-            if( grid[currentState.y()+nextAction[it].y()][currentState.x()+nextAction[it].x()] == 3 ) { // Only one side has wall
-                QPoint w_side(nextAction[it].x(), nextAction[it].y()); // wall side
-                QPoint a_side(nextAction[(it+1)%4].x(),nextAction[(it+1)%4].y()); // forward side
-                QPoint b_side(nextAction[(it+3)%4].x(),nextAction[(it+3)%4].y()); // backward side
-
-                bool has_open = false;
-                int x = currentState.x(), y = currentState.y();
-                while( grid[y][x] != 3 && !has_open ) {
-                    if( grid[y+w_side.y()][x+w_side.x()] == 0 || grid[y+a_side.y()][x+a_side.x()] == 5|| grid[y+w_side.y()][x+w_side.x()] == 8|| grid[y+w_side.y()][x+w_side.x()] == 2 ) {
-                        has_open = true;
-                        break;
-                    }
-                    x += a_side.x();
-                    y += a_side.y();
-                }
-
-                x = currentState.x(); y = currentState.y();
-                while( grid[y][x] != 3 && !has_open ) {
-                    if( grid[y+w_side.y()][x+w_side.x()] == 0 || grid[y+b_side.y()][x+b_side.x()] == 5|| grid[y+w_side.y()][x+w_side.x()] == 8||grid[y+w_side.y()][x+w_side.x()] == 2 ) {
-                        has_open = true;
-                        break;
-                    }
-                    x += b_side.x();
-                    y += b_side.y();
-                }
-                if( !has_open )
-                    grid[currentState.y()][currentState.x()] = 8;
-            }
-        }
-    }
-
-    for ( QPoint &p: target ) {
-        if(grid[p.y()][p.x()] == 5 )
-            grid[p.y()][p.x()] = 0;
-    }
-}
 
 void sokoban::restore() {
     grid = backup;

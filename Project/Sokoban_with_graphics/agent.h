@@ -1,5 +1,7 @@
 #ifndef AGENT_H
 #define AGENT_H
+#include <QVector>
+#include <QPoint>
 #include <algorithm>
 #include <vector>
 #include <set>
@@ -57,6 +59,7 @@ inline bool operator<( const state& a, const state& b ) {
 class agent {
 public:
     agent( std::vector<std::vector<int>> maze, std::vector<Point> target, Point agentPos );
+    agent( QVector<QVector<int>> maze, QVector<QPoint> target, QPoint agentPos );
     virtual ~agent() {};
     void setConfig( std::vector<std::vector<int>> maze, std::vector<Point> target, Point agentPos );
     void edgeScan();

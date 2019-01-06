@@ -6,114 +6,210 @@
 #include <conio.h>
 using namespace std;
 
+static const int ROAD = 0, AGENT = 1, BOX = 2, WALL = 3, BLACK = 4, TARGET = 5,BOX_ON_TARGET=6, MAN_ON_TARGET=7;
+static const int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, RESTART = 4, LEAVE = 5;
+
 sokoban::sokoban()
 :move(0),push(0),curAction(0) {}
 
 sokoban::~sokoban() {}
 
-void sokoban::gameProgress() {
+void sokoban::gameProgress( int ctr_source, int outside_ctr = -1 ) { // 0 from human, 1 from action list
 	bool win_flag = false;
 	int ctr_key, curX, curY;
 	Point agentBackup = agentPos;
-	cout << "------Game Start------" << endl;
 	showGame();
-	while( (ctr_key = getControl()) != LEAVE && !win_flag ) {
-		curX = agentPos.getX();
-		curY = agentPos.getY();
-		curAction = ctr_key;
-		switch(ctr_key) {
-			case 0: // UP
-				if( grid[curY-1][curX] == ROAD ) {
-					agentPos.setY(curY-1); agentPos.setX(curX);
-					grid[curY-1][curX] = AGENT;
-					grid[curY][curX] = ROAD;
-					move++;
-					showGame();
-				} else if( grid[curY-1][curX] == BOX ) {
-					if( grid[curY-1][curX] + grid[curY-2][curX] < 4 ) {
+	if( !ctr_source ) {
+		while( ctr_key = getControl() != LEAVE && !win_flag ) {
+			curX = agentPos.getX();
+			curY = agentPos.getY();
+			curAction = ctr_key;
+			switch(ctr_key) {
+				case 0: // UP
+					if( grid[curY-1][curX] == ROAD ) {
 						agentPos.setY(curY-1); agentPos.setX(curX);
 						grid[curY-1][curX] = AGENT;
-						grid[curY-2][curX] = BOX;
 						grid[curY][curX] = ROAD;
-						push++; move++;
+						move++;
 						showGame();
+					} else if( grid[curY-1][curX] == BOX ) {
+						if( grid[curY-1][curX] + grid[curY-2][curX] < 4 ) {
+							agentPos.setY(curY-1); agentPos.setX(curX);
+							grid[curY-1][curX] = AGENT;
+							grid[curY-2][curX] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
 					}
-				}
-				break;
-			case 1: // DOWN
-				if( grid[curY+1][curX] == ROAD ) {
-					agentPos.setY(curY+1); agentPos.setX(curX);
-					grid[curY+1][curX] = AGENT;
-					grid[curY][curX] = ROAD;
-					move++;
-					showGame();
-				} else if( grid[curY+1][curX] == BOX ) {
-					if( grid[curY+1][curX] + grid[curY+2][curX] < 4 ) {
+					break;
+				case 1: // DOWN
+					if( grid[curY+1][curX] == ROAD ) {
 						agentPos.setY(curY+1); agentPos.setX(curX);
 						grid[curY+1][curX] = AGENT;
-						grid[curY+2][curX] = BOX;
 						grid[curY][curX] = ROAD;
-						push++; move++;
+						move++;
 						showGame();
+					} else if( grid[curY+1][curX] == BOX ) {
+						if( grid[curY+1][curX] + grid[curY+2][curX] < 4 ) {
+							agentPos.setY(curY+1); agentPos.setX(curX);
+							grid[curY+1][curX] = AGENT;
+							grid[curY+2][curX] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
 					}
-				}
-				break;
-			case 2: // LEFT
-				if( grid[curY][curX-1] == ROAD ) {
-					agentPos.setY(curY); agentPos.setX(curX-1);
-					grid[curY][curX-1] = AGENT;
-					grid[curY][curX] = ROAD;
-					move++;
-					showGame();
-				} else if( grid[curY][curX-1] == BOX ) {
-					if( grid[curY][curX-1] + grid[curY][curX-2] < 4 ) {
+					break;
+				case 2: // LEFT
+					if( grid[curY][curX-1] == ROAD ) {
 						agentPos.setY(curY); agentPos.setX(curX-1);
 						grid[curY][curX-1] = AGENT;
-						grid[curY][curX-2] = BOX;
 						grid[curY][curX] = ROAD;
-						push++; move++;
+						move++;
 						showGame();
+					} else if( grid[curY][curX-1] == BOX ) {
+						if( grid[curY][curX-1] + grid[curY][curX-2] < 4 ) {
+							agentPos.setY(curY); agentPos.setX(curX-1);
+							grid[curY][curX-1] = AGENT;
+							grid[curY][curX-2] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
 					}
-				}
-				break;
-			case 3: // RIGHT
-				if( grid[curY][curX+1] == ROAD ) {
-					agentPos.setY(curY); agentPos.setX(curX+1);
-					grid[curY][curX+1] = AGENT;
-					grid[curY][curX] = ROAD;
-					move++;
-					showGame();
-				} else if( grid[curY][curX+1] == BOX ) {
-					if( grid[curY][curX+1] + grid[curY][curX+2] < 4 ) {
+					break;
+				case 3: // RIGHT
+					if( grid[curY][curX+1] == ROAD ) {
 						agentPos.setY(curY); agentPos.setX(curX+1);
 						grid[curY][curX+1] = AGENT;
-						grid[curY][curX+2] = BOX;
 						grid[curY][curX] = ROAD;
-						push++; move++;
+						move++;
 						showGame();
+					} else if( grid[curY][curX+1] == BOX ) {
+						if( grid[curY][curX+1] + grid[curY][curX+2] < 4 ) {
+							agentPos.setY(curY); agentPos.setX(curX+1);
+							grid[curY][curX+1] = AGENT;
+							grid[curY][curX+2] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
 					}
-				}
+					break;
+				case 4: // RESTART
+					win_flag = false;
+					move = push = 0;
+					grid = backup;
+					agentPos= agentBackup;
+					cout << "------!Game restart!------" << endl;
+					showGame();
+					break;
+				default:
+					break;
+			}
+			if (win_check()) {
+				win_flag = true;
 				break;
-			case 4: // RESTART
-				win_flag = false;
-				move = push = 0;
-				grid = backup;
-				agentPos= agentBackup;
-				cout << "------!Game restart!------" << endl;
-				showGame();
-				break;
-			default:
-				break;
-		}
-		if (win_check()) {
-			win_flag = true;
-			break;
-		}
-	};
-	
-	if( win_flag )
-		cout << "You win" << endl;
-	cout << "Game Stop" << endl;
+			}
+			if( win_flag )
+				cout << "You win" << endl;
+			cout << "Game Stop" << endl;
+		};
+	} else {
+		    curX = agentPos.getX();
+			curY = agentPos.getY();
+			curAction = outside_ctr;
+			switch(outside_ctr) {
+				case 0: // UP
+					if( grid[curY-1][curX] == ROAD ) {
+						agentPos.setY(curY-1); agentPos.setX(curX);
+						grid[curY-1][curX] = AGENT;
+						grid[curY][curX] = ROAD;
+						move++;
+						showGame();
+					} else if( grid[curY-1][curX] == BOX ) {
+						if( grid[curY-1][curX] + grid[curY-2][curX] < 4 ) {
+							agentPos.setY(curY-1); agentPos.setX(curX);
+							grid[curY-1][curX] = AGENT;
+							grid[curY-2][curX] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
+					}
+					break;
+				case 1: // DOWN
+					if( grid[curY+1][curX] == ROAD ) {
+						agentPos.setY(curY+1); agentPos.setX(curX);
+						grid[curY+1][curX] = AGENT;
+						grid[curY][curX] = ROAD;
+						move++;
+						showGame();
+					} else if( grid[curY+1][curX] == BOX ) {
+						if( grid[curY+1][curX] + grid[curY+2][curX] < 4 ) {
+							agentPos.setY(curY+1); agentPos.setX(curX);
+							grid[curY+1][curX] = AGENT;
+							grid[curY+2][curX] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
+					}
+					break;
+				case 2: // LEFT
+					if( grid[curY][curX-1] == ROAD ) {
+						agentPos.setY(curY); agentPos.setX(curX-1);
+						grid[curY][curX-1] = AGENT;
+						grid[curY][curX] = ROAD;
+						move++;
+						showGame();
+					} else if( grid[curY][curX-1] == BOX ) {
+						if( grid[curY][curX-1] + grid[curY][curX-2] < 4 ) {
+							agentPos.setY(curY); agentPos.setX(curX-1);
+							grid[curY][curX-1] = AGENT;
+							grid[curY][curX-2] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
+					}
+					break;
+				case 3: // RIGHT
+					if( grid[curY][curX+1] == ROAD ) {
+						agentPos.setY(curY); agentPos.setX(curX+1);
+						grid[curY][curX+1] = AGENT;
+						grid[curY][curX] = ROAD;
+						move++;
+						showGame();
+					} else if( grid[curY][curX+1] == BOX ) {
+						if( grid[curY][curX+1] + grid[curY][curX+2] < 4 ) {
+							agentPos.setY(curY); agentPos.setX(curX+1);
+							grid[curY][curX+1] = AGENT;
+							grid[curY][curX+2] = BOX;
+							grid[curY][curX] = ROAD;
+							push++; move++;
+							showGame();
+						}
+					}
+					break;
+				case 4: // RESTART
+					win_flag = false;
+					move = push = 0;
+					grid = backup;
+					agentPos= agentBackup;
+					cout << "------!Game restart!------" << endl;
+					showGame();
+					break;
+				default:
+					break;
+			}
+			if (win_check()) {
+				win_flag = true;
+			}
+			if( win_flag )
+				cout << "You win" << endl;
+	}
 }
 
 bool sokoban::win_check() {
