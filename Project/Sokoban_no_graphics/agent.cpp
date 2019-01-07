@@ -215,10 +215,10 @@ bool agent::planAction() {
 			<< it->first.getX() << " , " << it->first.getY() << " )" << endl;
 	}
 	#endif
-	/*set<Point> second;
+	set<Point> second;
 	state first;
 	bool has_sol = boxTurn( aims, cargos, agentPos, true, first, second  );
-	return has_sol;*/
+	return has_sol;
 	return true;
 }
 
@@ -264,9 +264,8 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
 	}
 
 	for ( const target& major : aims) {
-		if( plan ) {
+		if( plan ) 
 			evaluateBox( major, boxes );
-		}
 		map< Point, box >::iterator it;
 		vector<box> boxList;
 		for( it = boxes.begin(); it != boxes.end(); it++ ) {
@@ -276,6 +275,11 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
     	}
 		sort( boxList.begin(),boxList.end());
 		for ( int i = 0; i < boxList.size(); i++ ) {
+			// aging
+			for ( int j = 0; j < i; j++ ) {
+				boxes[boxList[j].position].barrier = boxList[i].barrier + 1;	
+			}
+
 			vector<state> nextState;
 			Point nextPosition;
 			Point actionPosition;
@@ -430,18 +434,14 @@ void agent::evaluateBox( const target& aim, map<Point, box>& boxes ) {
 	for ( it = boxes.begin(); it != boxes.end(); it++ ) {
 		if ( it->second.barrier == -1 )
 			continue;
-		barrier = 0;
 		priority_queue<state,vector<state>> frontier;
-		set<Point> explored;
+		map<Point, Point> explored;
 		state currentState( manhattanDistance(it->first,it->first) + euclideanDistance(it->first, aim.position) , it->first );
-		explored.insert(currentState.currentPosition);
+		explored[currentState.currentPosition] = currentState.currentPosition;
 		frontier.push( currentState );
 		while( !frontier.empty() ) {
 			currentState = frontier.top();
 			frontier.pop();
-
-			if( boxView[currentState.currentPosition.getY()][currentState.currentPosition.getX()] == 2 )
-				barrier++;
 
 			if ( currentState.currentPosition == aim.position )
 				break;
@@ -452,11 +452,20 @@ void agent::evaluateBox( const target& aim, map<Point, box>& boxes ) {
 				if( (explored.find( nextPosition ) == explored.end()) &&
 					boxView[nextPosition.getY()][nextPosition.getX()] < 3 &&
 					boxView[currentState.currentPosition.getY() - act.getY()][currentState.currentPosition.getX() - act.getX()]  != 3 ) {
-						explored.insert( nextPosition );
+						explored[nextPosition] = currentState.currentPosition;
 						state nextState( manhattanDistance(it->first,nextPosition) + euclideanDistance(nextPosition, aim.position), nextPosition );
 						frontier.push( nextState );
 					}
 			}
+		}
+
+		Point current = currentState.currentPosition;
+		Point origin = it->first;
+		barrier = 0;
+		while ( current != origin  ) {
+			if( boxView[current.getY()][current.getX()] == 2 )
+				barrier++;
+			current = explored[ current ];
 		}
 		it->second.barrier = barrier;
 	}

@@ -15,7 +15,7 @@ int main ()
 	//game.gameProgress( 0 ); // 0 is human, 1 is AI
   	agent man( game.getMaze(),game.getTarget(),game.getAgentPos());
 	bool sol = man.planAction();
-	/*int action = man.getAction();
+	int action = man.getAction();
 	if( sol ) {
 		while( action != -1 ) {
 			Sleep( 300 );
@@ -24,6 +24,6 @@ int main ()
 		}
 	} else {
 		cout << "The maze has no solution!" << endl;
-	}*/
+	}
   	return 0;
 } 
