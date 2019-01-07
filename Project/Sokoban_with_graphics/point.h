@@ -45,6 +45,11 @@ public:
 		return false;
 	}
 
+	bool operator!=( const Point &b ) const {
+		if( (*this) == b  )
+			return false;
+		return true;
+	}
 private:
 	int x;
 	int y;

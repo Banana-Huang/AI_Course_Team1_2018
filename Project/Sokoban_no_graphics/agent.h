@@ -99,6 +99,7 @@ class agent {
 public:
     agent( std::vector<std::vector<int>> maze, std::vector<Point> target, Point agentPos );
     ~agent() {};
+    // agent( QVector<QVector<int>> maze, QVector<QPoint> target, QPoint agentPos );
     void setConfig( std::vector<std::vector<int>> maze, std::vector<Point> target, Point agentPos );
     void edgeScan();
     bool planAction();
