@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 using namespace std;
-inline uint qHash (const QPoint & key)
-{
-    return qHash (QPair<int,int>(key.x(), key.y()) );
-}
 
 sokoban::sokoban()
 :move(0),push(0),curAction(0){}

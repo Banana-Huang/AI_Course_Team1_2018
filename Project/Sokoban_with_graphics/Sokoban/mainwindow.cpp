@@ -267,63 +267,20 @@ void MainWindow::setGameView()
     ui->graphicsView->show();
 }
 
-void MainWindow::redraw() {
-    graph.resize(game->getHeight());
-    for ( QVector<QGraphicsPixmapItem*> &temp: graph )
-        temp.resize(game->getWidth());
-    scene->clear();
-    scene->setSceneRect(0,0,game->getWidth()*50,game->getHeight()*50);
-
-    for ( int i = 0; i < game->getHeight(); i++ ) {
-        for( int j = 0; j < game->getWidth(); j++ ) {
-            graph[i][j] = scene->addPixmap((*imageVector)[game->getData(j,i)]);
-            graph[i][j]->setPos(j*50,i*50);
-        }
-    }
-
-    int data;
-    for( QPoint &p: game->getTargetPos() ) {
-        data = game->getData(p.x(),p.y());
-        switch( data ) {
-            case 0:
-                graph[p.y()][p.x()]->setPixmap((*imageVector)[5]);
-                break;
-            case 1:
-                graph[p.y()][p.x()]->setPixmap((*imageVector)[7]);
-                break;
-            case 2:
-                graph[p.y()][p.x()]->setPixmap((*imageVector)[6]);
-                break;
-            default:
-                break;
-        }
-    }
-
-    QSize changeSize( game->getWidth()*50 + 50,game->getHeight()*50 + 50 );
-    QSize viewSize(ui->graphicsView->width(),ui->graphicsView->height());
-    resize(originSize.width()+changeSize.width()-viewSize.width(),originSize.height()+changeSize.height()-viewSize.height());
-    originSize.setWidth(width());
-    originSize.setHeight(height());
-    ui->statusTextBrowser->resize(ui->statusTextBrowser->width(),changeSize.height()-ui->statusTextBrowser->y());
-    ui->graphicsView->resize(changeSize.width(),changeSize.height());
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->show();
-}
-
 void MainWindow::gameStart() {
     ui->stopButton->setEnabled(true);
     ui->startButton->setEnabled(false);
     ui->levelComboBox->setEnabled(false);
     ui->agentComboBox->setEnabled(false);
     *timer = QTime::currentTime();
+    setGameView();
     QString curAgent = ui->agentComboBox->currentText();
     QString curLevel = ui->levelComboBox->currentText();
     QString message = "Game start\nAgent:  " + curAgent +
             "\nLevel:  " + curLevel+"\nStartTime:  "+
             timer->toString();
     ui->statusTextBrowser->setText(message);
-    if( ui->agentComboBox->currentText() == "Human" ) {
-        setGameView();
+    if( ui->agentComboBox->currentText() == "Human" )
         game_start = true;
     } else {
         setGameView();
@@ -352,9 +309,12 @@ void MainWindow::gameStop() {
     ui->levelComboBox->setEnabled(true);
     ui->agentComboBox->setEnabled(true);
     game_start = false;
+<<<<<<< HEAD:Project/Sokoban_with_graphics/mainwindow.cpp
     if( ui->agentComboBox->currentText() == "AI" ) {
         disconnect( &aiTimer, SIGNAL(timeout()), this, SLOT(aiControl()));
         aiTimer.stop();
         delete man;
     }
+=======
+>>>>>>> bac0c6d0a2672f2ab395d6e32ea93d1c32d14484:Project/Sokoban_with_graphics/Sokoban/mainwindow.cpp
 }

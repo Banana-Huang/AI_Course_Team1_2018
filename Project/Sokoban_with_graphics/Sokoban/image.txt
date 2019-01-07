@@ -6,4 +6,3 @@ black.png
 target.png
 box_on_target.png
 man_on_target.png
-box_cant_go.png

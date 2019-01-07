@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-12-17T15:44:53
+# Project created by QtCreator 2018-11-30T03:24:18
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = sokoban_with_graphics
+TARGET = Sokoban
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -42,3 +42,7 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    level.txt \
+    image.txt

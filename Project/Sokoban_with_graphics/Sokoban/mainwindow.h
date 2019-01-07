@@ -14,9 +14,6 @@
 #include <QSize>
 #include <QPixmap>
 #include <QPoint>
-#include <QSet>
-#include <QQueue>
-#include <iostream>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QKeyEvent>
@@ -66,7 +63,6 @@ public:
     ~MainWindow();
 public slots:
     void setGameView();
-    void redraw();
     void gameStart();
     void gameStop();
     void aiControl();
