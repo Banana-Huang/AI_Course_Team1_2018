@@ -200,11 +200,26 @@ bool agent::planAction() {
 		box temp( 0, boxVector[i], new_explored );
 		cargos[temp.position]= temp; 
 	}
-
-	set<Point> second;
+	evaluateTarget( aims, cargos );
+	evaluateBox( aims[0], cargos );
+	
+	#ifdef DEBUG
+	cout << "TARGET:\n";
+	for ( const target& t: aims ) {
+		cout << "Priority: " << t.barrier << " Position: ( "
+			<< t.position.getX() << " , " << t.position.getY() << " )" << endl;
+	}
+	cout << "BOXES:\n";
+	for ( map<Point, box>::iterator it = cargos.begin(); it != cargos.end(); it++  ) {
+		cout << "Priority: " << it->second.barrier << " Position: ( "
+			<< it->first.getX() << " , " << it->first.getY() << " )" << endl;
+	}
+	#endif
+	/*set<Point> second;
 	state first;
 	bool has_sol = boxTurn( aims, cargos, agentPos, true, first, second  );
-	return has_sol;
+	return has_sol;*/
+	return true;
 }
 
 bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos, bool plan, state& agentWantState ,set<Point> agentExplored  ) {
@@ -249,8 +264,9 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
 	}
 
 	for ( const target& major : aims) {
-		if( plan )
+		if( plan ) {
 			evaluateBox( major, boxes );
+		}
 		map< Point, box >::iterator it;
 		vector<box> boxList;
 		for( it = boxes.begin(); it != boxes.end(); it++ ) {
@@ -258,7 +274,6 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
         		boxList.push_back(it->second);
 			}
     	}
-
 		sort( boxList.begin(),boxList.end());
 		for ( int i = 0; i < boxList.size(); i++ ) {
 			vector<state> nextState;
@@ -320,8 +335,8 @@ bool agent::agentTurn( vector<target> aims, map<Point, box> boxes, Point agentPo
 			<< t.position.getX() << " , " << t.position.getY() << " )" << endl;
 	}
 	cout << "WANTED STATE:\n";
-	cout << "agentWantPosition: ( " << agentWantState.currentPosition.getX() - possibleAction[agentWantState.action].getX() << " , "
-		<< agentWantState.currentPosition.getY() - possibleAction[agentWantState.action].getY() << " )" << endl;
+	cout << "boxCurrentPosition: ( " << agentWantState.currentPosition.getX() << " , "
+		<< agentWantState.currentPosition.getY() << " )" << endl;
 	cout << "boxWantPosition: ( " << agentWantState.boxWantPosition.getX() << " , "
 		<< agentWantState.boxWantPosition.getY() << " )" << endl;
 	cout << "AGENTPOS: ( " << agentPos.getX() << " , " << agentPos.getY() << " )" << endl; 
@@ -386,7 +401,7 @@ bool agent::agentTurn( vector<target> aims, map<Point, box> boxes, Point agentPo
 	}
 }
 
-void agent::evaluateTarget( vector<target>& aims, map<Point, box> boxes ) {
+void agent::evaluateTarget( vector<target>& aims, map<Point, box>& boxes ) {
 	int barrier;
 	map<Point, box>::iterator it;
 	for ( it = boxes.begin(); it != boxes.end(); it++ )
@@ -435,9 +450,8 @@ void agent::evaluateBox( const target& aim, map<Point, box>& boxes ) {
 			for ( const Point &act: possibleAction ) { // Get next state
 				nextPosition.setX( currentState.currentPosition.getX() + act.getX()); nextPosition.setY(currentState.currentPosition.getY() + act.getY());
 				if( (explored.find( nextPosition ) == explored.end()) &&
-					boxView[nextPosition.getY()][nextPosition.getX()] != 8 &&
-					boxView[nextPosition.getY()][nextPosition.getX()] != 3  &&
-					boxView[currentState.currentPosition.getY() - act.getY()][currentState.currentPosition.getX() - act.getX()] < 3 ) {
+					boxView[nextPosition.getY()][nextPosition.getX()] < 3 &&
+					boxView[currentState.currentPosition.getY() - act.getY()][currentState.currentPosition.getX() - act.getX()]  != 3 ) {
 						explored.insert( nextPosition );
 						state nextState( manhattanDistance(it->first,nextPosition) + euclideanDistance(nextPosition, aim.position), nextPosition );
 						frontier.push( nextState );

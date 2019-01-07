@@ -109,7 +109,7 @@ public:
     std::vector<std::vector<int>> getBoxView() const;
     float manhattanDistance( Point src, Point dst );
     float euclideanDistance( Point src, Point dst );
-    void evaluateTarget( std::vector<target>&, std::map<Point, box> );
+    void evaluateTarget( std::vector<target>&, std::map<Point, box>& );
     void evaluateBox( const target&, std::map<Point, box>& );
     void printTargetPos() const;
     void printBoxPos() const;
