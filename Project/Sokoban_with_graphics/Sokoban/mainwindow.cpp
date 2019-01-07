@@ -280,7 +280,7 @@ void MainWindow::gameStart() {
             "\nLevel:  " + curLevel+"\nStartTime:  "+
             timer->toString();
     ui->statusTextBrowser->setText(message);
-    if( ui->agentComboBox->currentText() == "Human" )
+    if( ui->agentComboBox->currentText() == "Human" ) {
         game_start = true;
     } else {
         setGameView();
@@ -309,12 +309,9 @@ void MainWindow::gameStop() {
     ui->levelComboBox->setEnabled(true);
     ui->agentComboBox->setEnabled(true);
     game_start = false;
-<<<<<<< HEAD:Project/Sokoban_with_graphics/mainwindow.cpp
     if( ui->agentComboBox->currentText() == "AI" ) {
         disconnect( &aiTimer, SIGNAL(timeout()), this, SLOT(aiControl()));
         aiTimer.stop();
         delete man;
     }
-=======
->>>>>>> bac0c6d0a2672f2ab395d6e32ea93d1c32d14484:Project/Sokoban_with_graphics/Sokoban/mainwindow.cpp
 }

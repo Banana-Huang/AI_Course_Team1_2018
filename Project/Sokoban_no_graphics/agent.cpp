@@ -193,7 +193,7 @@ void agent::printBoxPos() const {
 }
 
 float agent::manhattanDistance( Point src, Point dst ) {
-	return static_cast<float>(abs((dst.getX() - src.getX()) + (dst.getY() - src.getY())));
+	return static_cast<float>(abs(dst.getX() - src.getX()) + abs(dst.getY() - src.getY()));
 }
 
 float agent::euclideanDistance( Point src, Point dst ) {
@@ -286,7 +286,6 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
 	if( plan ) {
 		if ( aims.empty() ) // find the solution
 			return true;
-
 		evaluateTarget( aims, boxes );
 		sort( aims.begin(), aims.end() );
 		agentExplored.clear();
@@ -314,14 +313,14 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
 			Point actionPosition;
 			boxes[boxList[i].position].explored.insert(boxList[i].position);
 			for ( int j = 0; j < possibleAction.size(); j++ ) {
-				nextPosition.setX( possibleAction[j].getX() + boxList[i].position.getX()); nextPosition.setY(possibleAction[j].getY() + boxList[i].position.getY());
+				nextPosition.setX( boxList[i].position.getX() + possibleAction[j].getX()); nextPosition.setY(boxList[i].position.getY() + possibleAction[j].getY() );
 				actionPosition.setX( boxList[i].position.getX() - possibleAction[j].getX() ); actionPosition.setY(boxList[i].position.getY() - possibleAction[j].getY());
 				if ( boxView[nextPosition.getY()][nextPosition.getX()] < 2 &&
 				     agentView[actionPosition.getY()][actionPosition.getX()] < 2 &&
 					 boxes.find(actionPosition) == boxes.end() &&
 					 boxes[boxList[i].position].explored.find(nextPosition) == boxes[boxList[i].position].explored.end() &&
 					 boxes.find( nextPosition ) == boxes.end() ) {
-					state temp( manhattanDistance( boxList[i].position, major.position), boxList[i].position, major.position, j );
+					state temp( manhattanDistance( nextPosition, major.position), boxList[i].position, major.position, j );
 					nextState.push_back( temp );
 				}
 			}
@@ -368,10 +367,13 @@ bool agent::agentTurn( vector<target> aims, map<Point, box> boxes, Point agentPo
 			<< t.position.getX() << " , " << t.position.getY() << " )" << endl;
 	}
 	cout << "WANTED STATE:\n";
+	cout << "Wanted Action: " << agentWantState.action << " Heuristic: " << agentWantState.heuristic << endl;
 	cout << "boxCurrentPosition: ( " << agentWantState.currentPosition.getX() << " , "
 		<< agentWantState.currentPosition.getY() << " )" << endl;
 	cout << "boxWantPosition: ( " << agentWantState.boxWantPosition.getX() << " , "
 		<< agentWantState.boxWantPosition.getY() << " )" << endl;
+	cout << "agentWantPosition: ( " << agentWantState.currentPosition.getX() - possibleAction[agentWantState.action].getX() << " , "
+		<< agentWantState.currentPosition.getY() - possibleAction[agentWantState.action].getY() << " )" << endl;
 	cout << "AGENTPOS: ( " << agentPos.getX() << " , " << agentPos.getY() << " )" << endl; 
 	#endif
 	/* implement */
