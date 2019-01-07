@@ -11,7 +11,7 @@ sokoban.o: sokoban.cpp
 	g++ -c sokoban.cpp
 
 agent.o: agent.cpp
-	g++ -c agent.cpp
+	g++ -DDEBUG -c agent.cpp
 
 ${OBJ}: ${SRC}
 	g++ -c ${SRC}
