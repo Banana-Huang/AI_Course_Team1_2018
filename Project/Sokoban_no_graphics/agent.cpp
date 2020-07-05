@@ -317,7 +317,7 @@ bool agent::boxTurn( vector<target> aims, map<Point, box> boxes, Point agentPos,
 				actionPosition.setX( boxList[i].position.getX() - possibleAction[j].getX() ); actionPosition.setY(boxList[i].position.getY() - possibleAction[j].getY());
 				if ( boxView[nextPosition.getY()][nextPosition.getX()] < 2 &&
 				     agentView[actionPosition.getY()][actionPosition.getX()] < 2 &&
-					 boxes.find(actionPosition) == boxes.end() &&
+					 boxes.find( actionPosition ) == boxes.end() &&
 					 boxes[boxList[i].position].explored.find(nextPosition) == boxes[boxList[i].position].explored.end() &&
 					 boxes.find( nextPosition ) == boxes.end() ) {
 					state temp( manhattanDistance( nextPosition, major.position), boxList[i].position, major.position, j );
